@@ -40,7 +40,7 @@ export default function Home(){
                 <Image source={Logo}></Image>
             </View>
             <MapView
-                onRegionChangeComplete = {handleRegionChange}
+                onRegionChangeComplete = {HandleRegionChange}
                 initialRegion = {currentRegion}
                 style = {Style.map}
             />
