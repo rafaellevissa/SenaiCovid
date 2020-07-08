@@ -82,8 +82,6 @@ export default function Home(){
                 initialRegion = {currentRegion}
                 style = {Style.map}
             >
-
-
                 {states.map((state)=>{
                     return(
                        <Marker
@@ -93,14 +91,19 @@ export default function Home(){
                             longitude: Number(state.longitude),
                         }}
                        >
-
-                          
-                           
+                        <Callout>
+                            <View style={Style.CalloutContent}>
+                                <Text style={Style.CalloutText}>{state.state}</Text>
+                                <Text style={Style.CalloutText}>Casos Confirmados: {state.cases}</Text>
+                                <Text style={Style.CalloutText}>Mortos: {state.deaths}</Text>
+                                <Text style={Style.CalloutText}>
+                                    Atualizado no dia: {state.formatDateTime}
+                                </Text>
+                            </View>
+                        </Callout>                                                     
                        </Marker> 
                     );
                 })}
-
-
             </MapView>
         </View>
     );
