@@ -27,3 +27,8 @@ export const CalloutText = styled.Text`
   color: #666;
   font-weight: bold;
 `;
+export const ImageMarker = styled.Image`
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+`;

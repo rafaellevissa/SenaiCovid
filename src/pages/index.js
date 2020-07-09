@@ -91,6 +91,7 @@ export default function Home(){
                             longitude: Number(state.longitude),
                         }}
                        >
+                        <ImageMarker source={Logo} />
                         <Callout>
                             <CalloutContent>
                                 <CalloutText>{state.state}</CalloutText>
