@@ -1,23 +1,20 @@
-import {StyleSheet} from 'react-native';
-import Constant from 'expo-constants';
 import styled from "styled-components/native";
 
-export default StyleSheet.create({
-    container:{
-        flex: 1,
-        paddingHorizontal: 24,
-        paddingTop: Constant.statusBarHeight+20,
-    },
-    header:{
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
-    map: {
-        flex: 1
-    },
-});
-
+export const Container = styled.View`
+  flex: 1;
+`;
+export const Header = styled.View`
+  align-items: center;
+  flex-direction: row;
+  background-color: #f0f0f5;
+  justify-content: space-between;
+  padding: 5px 10px 0 10px;
+  width: 100%;
+`;
+export const TextHeader = styled.Text`
+  color: #333;
+  font-weight: bold;
+`;
 export const StatusBar = styled.StatusBar``;
 export const CalloutContent = styled.View`
   width: 250px;
@@ -26,6 +23,11 @@ export const CalloutContent = styled.View`
 export const CalloutText = styled.Text`
   color: #666;
   font-weight: bold;
+`;
+export const ImageHeader = styled.Image`
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
 `;
 export const ImageMarker = styled.Image`
   width: 30px;

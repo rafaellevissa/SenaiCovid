@@ -1,111 +1,131 @@
-import React, {useState, useEffect} from 'react';
-import {View, Image, Text} from 'react-native';
-import Style,{CalloutContent, CalloutText} from './style';
-import Logo from '../assets/logo.png';
-import MapView, {Marker, Callout} from 'react-native-maps';
-import {requestPermissionsAsync, getCurrentPositionAsync} from 'expo-location';
+import React, { useEffect, useState } from "react";
+import {
+  Container,
+  Header,
+  TextHeader,
+  StatusBar,
+  CalloutContent,
+  CalloutText,
+  ImageMarker,
+  ImageHeader,
+} from "./style";
 
-import Api from '../services/api';
-import Coords from '../database/states';
+import MapView, { Marker, Callout } from "react-native-maps";
+import {
+  requestPermissionsAsync,
+  getCurrentPositionAsync,
+} from "expo-location";
 
-export default function Home(){
-    const [currentRegion, setCurrentRegion] = useState(null);
-    const [states, setStates] = useState([]);
+import api from "../services/api";
 
-    useEffect(()=>{
-        async function LoadInitialPosition(){
-            const {granted} =  await requestPermissionsAsync();
-            if(granted){
-                const {coords} = await getCurrentPositionAsync({
-                    enableHighAccuracy: true,
-                });
-                const {latitude,longitude} = coords;
-                setCurrentRegion({
-                    latitude,
-                    longitude,
-                    latitudeDelta: 10.0,
-                    longitudeDelta: 15.0,
-                })
-            }
-        }
-        LoadInitialPosition();
-    },[]);
+import logoImg from "../assets/logo.png";
 
-    function HandleRegionChange(Region){
-        setCurrentRegion(Region);
-    }
+import coords from "../database/states";
 
-    if(!currentRegion){
-        return null;
-    }
-    
-    async function loadCasesInformation(){
-        const getStates = (await Api.get("/report/v1")).data;
-        const states = getStates.data;
-        const statesInfo = [];
+function Home() {
+  const [region, setRegion] = useState(null);
+  const [states, setStates] = useState([]);
 
-        const statesOrder = states.sort((a,b)=>{
-            return a.state > b.state ? 1 : b.state > a.state ? -1 : 0;
+  useEffect(() => {
+    async function loadPosition() {
+      const { granted } = await requestPermissionsAsync();
+      if (granted) {
+        const { coords } = await getCurrentPositionAsync({
+          enableHighAccuracy: false,
         });
-        for(let i =0; i<statesOrder.lenght; i++){
-            var id = parseInt(i) +1;
-            var {uf, state, cases, deaths, suspects, refuses} = statesOrder[i];
-            var {latitude, longitude} = Coords[i];
-            var dateTime = new Date(statesOrder[i].datetime);
-            var formatDateTime = `${dateTime.getDate()}-${
-                parseInt(dateTime.getMonth()) +1
-                }-${dateTime.getFullYear()} ${dateTime.getHours()}:${dateTime.getMinutes()}`;
 
-            statesInfo.push({
-                uf, 
-                state, 
-                cases, 
-                deaths, 
-                suspects, 
-                refuses,
-                formatDateTime,
-                latitude,
-                longitude,
-            });
-        }
-        setStates(statesInfo);
+        const { latitude, longitude } = coords;
+
+        setRegion({
+          latitude,
+          longitude,
+          latitudeDelta: 10.0,
+          longitudeDelta: 20.0,
+        });
+      }
     }
-    loadCasesInformation()
-    return(
-        <View style={Style.container}>
-            <View style={Style.header}>
-                <Text>COVID - 19</Text>
-                <Image source={Logo}></Image>
-            </View>
-            <MapView
-                onRegionChangeComplete = {HandleRegionChange}
-                initialRegion = {currentRegion}
-                style = {Style.map}
+    loadPosition();
+  }, []);
+
+  function handleRegionChanged(region) {
+    setRegion(region);
+  }
+
+  async function loadsCasesInformation() {
+    const getStates = (await api.get("/report/v1")).data;
+
+    const states = getStates.data;
+
+    const StatesInfor = [];
+
+    // Organizando estados por ordem alfabética
+    const States = states.sort((a, b) => {
+      return a.state > b.state ? 1 : b.state > a.state ? -1 : 0;
+    });
+    for (let i = 0; i < States.length; i++) {
+      var id = parseInt(i) + 1;
+      var { uf, state, cases, deaths, suspects, refuses } = States[i];
+      var { latitude, longitude } = coords[i];
+      // Convertendo data e horário
+      var dateTime = new Date(States[i].datetime);
+      var formatDateTime = `${dateTime.getDate()}-${
+        parseInt(dateTime.getMonth()) + 1
+      }-${dateTime.getFullYear()} ${dateTime.getHours()}:${dateTime.getMinutes()}`;
+
+      StatesInfor.push({
+        uf,
+        state,
+        cases,
+        deaths,
+        suspects,
+        refuses,
+        formatDateTime,
+        latitude,
+        longitude,
+      });
+    }
+    setStates(StatesInfor);
+  }
+  loadsCasesInformation();
+  return (
+    <Container>
+      <StatusBar barStyle="light-content" backgroundColor="#0f7778" />
+      <Header>
+        <TextHeader>COVID - 19</TextHeader>
+        <ImageHeader source={logoImg} />
+      </Header>
+
+      <MapView
+        onRegionChangeComplete={handleRegionChanged}
+        style={{ flex: 1 }}
+        initialRegion={region}
+      >
+        {states.map((state) => {
+          return (
+            <Marker
+              key={state.uf}
+              coordinate={{
+                latitude: Number(state.latitude),
+                longitude: Number(state.longitude),
+              }}
             >
-                {states.map((state)=>{
-                    return(
-                       <Marker
-                        key={state.uf}
-                        coordinate={{
-                            latitude: Number(state.latitude),
-                            longitude: Number(state.longitude),
-                        }}
-                       >
-                        <ImageMarker source={Logo} />
-                        <Callout>
-                            <CalloutContent>
-                                <CalloutText>{state.state}</CalloutText>
-                                <CalloutText>Casos Confirmados: {state.cases}</CalloutText>
-                                <CalloutText>Mortos: {state.deaths}</CalloutText>
-                                <CalloutText>
-                                    Atualizado no dia: {state.formatDateTime}
-                                </CalloutText>
-                            </CalloutContent>
-                        </Callout>                                                     
-                       </Marker> 
-                    );
-                })}
-            </MapView>
-        </View>
-    );
+              <ImageMarker source={logoImg} />
+              <Callout>
+                <CalloutContent>
+                  <CalloutText>{state.state}</CalloutText>
+                  <CalloutText>Casos Confirmados: {state.cases}</CalloutText>
+                  <CalloutText>Mortos: {state.deaths}</CalloutText>
+                  <CalloutText>
+                    Atualizado no dia: {state.formatDateTime}
+                  </CalloutText>
+                </CalloutContent>
+              </Callout>
+            </Marker>
+          );
+        })}
+      </MapView>
+    </Container>
+  );
 }
+
+export default Home;
