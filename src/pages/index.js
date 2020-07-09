@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {View, Image, Text} from 'react-native';
-import Style from './style';
+import Style,{CalloutContent, CalloutText} from './style';
 import Logo from '../assets/logo.png';
 import MapView, {Marker, Callout} from 'react-native-maps';
 import {requestPermissionsAsync, getCurrentPositionAsync} from 'expo-location';
@@ -92,14 +92,14 @@ export default function Home(){
                         }}
                        >
                         <Callout>
-                            <View style={Style.CalloutContent}>
-                                <Text style={Style.CalloutText}>{state.state}</Text>
-                                <Text style={Style.CalloutText}>Casos Confirmados: {state.cases}</Text>
-                                <Text style={Style.CalloutText}>Mortos: {state.deaths}</Text>
-                                <Text style={Style.CalloutText}>
+                            <CalloutContent>
+                                <CalloutText>{state.state}</CalloutText>
+                                <CalloutText>Casos Confirmados: {state.cases}</CalloutText>
+                                <CalloutText>Mortos: {state.deaths}</CalloutText>
+                                <CalloutText>
                                     Atualizado no dia: {state.formatDateTime}
-                                </Text>
-                            </View>
+                                </CalloutText>
+                            </CalloutContent>
                         </Callout>                                                     
                        </Marker> 
                     );

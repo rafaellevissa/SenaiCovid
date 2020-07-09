@@ -1,5 +1,6 @@
 import {StyleSheet} from 'react-native';
 import Constant from 'expo-constants';
+import styled from "styled-components/native";
 
 export default StyleSheet.create({
     container:{
@@ -17,3 +18,12 @@ export default StyleSheet.create({
     },
 });
 
+export const StatusBar = styled.StatusBar``;
+export const CalloutContent = styled.View`
+  width: 250px;
+  justify-content: center;
+`;
+export const CalloutText = styled.Text`
+  color: #666;
+  font-weight: bold;
+`;
